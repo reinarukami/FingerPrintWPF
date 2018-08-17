@@ -1,0 +1,24 @@
+﻿<mui:ModernWindow x:Class="FingerPrintWPF.MainWindow"
+  ContentSource="/Content/LoginControl.xaml"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+  Title="User Verification" IsTitleVisible="True"
+  Height="580" Width="600">
+
+    <mui:ModernWindow.MenuLinkGroups>
+        <mui:LinkGroup DisplayName="User Verification" >
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="Login Verification" Source="/Content/LoginControl.xaml"/>
+                <mui:Link DisplayName="Fingerprint Verification" Source="/Content/FingerPrintControl.xaml"/>
+                <mui:Link DisplayName="Face Verification" Source="/Content/FaceVerificationControl.xaml" />
+                <mui:Link DisplayName="USB Host Verification" />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
+    </mui:ModernWindow.MenuLinkGroups>
+
+    <TextBlock x:Name="Test" Text="Face Verification!" />
+
+
+
+</mui:ModernWindow>
