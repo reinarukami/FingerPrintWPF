@@ -47,12 +47,20 @@ namespace FingerPrintWPF
 			//Check Device Reader
 			if (!OpenReader())
 			{
-				//this.Close();
+				Application.Current.Dispatcher.Invoke((Action)delegate
+				{
+					ModernDialog.ShowMessage("Fingerprint capture device not found please try again", "Device Not Found", MessageBoxButton.OK);
+				});
+
+				System.Windows.IInputElement target = FirstFloor.ModernUI.Windows.Navigation.NavigationHelper.FindFrame("_top", this);
+				System.Windows.Input.NavigationCommands.GoToPage.Execute("/Content/LoginControl.xaml", target);
 			}
 
-			if (!StartCaptureAsync(this.OnCaptured))
+			if (!StartCaptureAsync(this.OnCaptured) && OpenReader())
 			{
-				//this.Close();
+				System.Windows.IInputElement target = FirstFloor.ModernUI.Windows.Navigation.NavigationHelper.FindFrame("_top", this);
+				System.Windows.Input.NavigationCommands.GoToPage.Execute("/Content/LoginControl.xaml", target);
+
 			}
 		}
 
@@ -71,7 +79,9 @@ namespace FingerPrintWPF
 				{
 					Application.Current.Dispatcher.Invoke(() =>
 					{
-						FingerImage.Source = CreateBitmap(fiv.RawImage, fiv.Width, fiv.Height);
+						//FingerImage.Source = new BitmapImage(new Uri(@"\myserver\folder1\Customer Data\sample.png"));
+
+						FingerImage.Source = new BitmapImage(new Uri(@"\Assets\Images\blotocol.png"));
 					});
 
 				}
@@ -117,6 +127,8 @@ namespace FingerPrintWPF
 							System.Windows.Input.NavigationCommands.GoToPage.Execute("/Content/FaceVerificationControl.xaml", target);
 
 						});
+
+
 					}
 					else
 					{
@@ -156,34 +168,48 @@ namespace FingerPrintWPF
 
 		public bool OpenReader()
 		{
-
-			Constants.ResultCode result = Constants.ResultCode.DP_DEVICE_FAILURE;
-
-			// Open reader
-			result = currentReader.Open(Constants.CapturePriority.DP_PRIORITY_COOPERATIVE);
-
-			if (result != Constants.ResultCode.DP_SUCCESS)
+			try
 			{
-				MessageBox.Show("Error:  " + result);
+	
+				Constants.ResultCode result = Constants.ResultCode.DP_DEVICE_FAILURE;
+				// Open reader
+				result = currentReader.Open(Constants.CapturePriority.DP_PRIORITY_COOPERATIVE);
+
+				if (result != Constants.ResultCode.DP_SUCCESS)
+				{
+					MessageBox.Show("Error:  " + result);
+					return false;
+				}
+				return true;
+			}
+			catch
+			{
 				return false;
 			}
 
-			return true;
+	
 		}
 
 		public bool StartCaptureAsync(Reader.CaptureCallback OnCaptured)
 		{
-			// Activate capture handler
-			currentReader.On_Captured += new Reader.CaptureCallback(OnCaptured);
-			
+			try
+			{
+				// Activate capture handler
+				currentReader.On_Captured += new Reader.CaptureCallback(OnCaptured);
 
-			// Call capture
-			if (!CaptureFingerAsync())
+				// Call capture
+				if (!CaptureFingerAsync())
+				{
+					return false;
+				}
+
+				return true;
+			}
+			catch
 			{
 				return false;
 			}
 
-			return true;
 		}
 
 		private bool CaptureFingerAsync()
